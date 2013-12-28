@@ -21,6 +21,7 @@ package
 		public var sun:FlxSprite;
 		public var planets:FlxGroup;
 		public var fighters:FlxGroup;
+		public var stars:FlxGroup;
 		public var remaining:int;
 		  
 		
@@ -265,9 +266,25 @@ package
 			FlxG.bgColor = 0xff101010;
 			planets = new FlxGroup(10);
 			fighters = new FlxGroup(1000);
+			stars = new FlxGroup(50);
 			
 			if (FlxG.level < 3) FlxG.level = 3;
 			remaining = FlxG.level;
+			
+			
+			
+			for (var i:int = 0; i < 50; i++)
+			{
+				//Create star
+				var star:FlxSprite = new FlxSprite(Math.random()*FlxG.width,Math.random()*FlxG.height);
+				star.makeGraphic(1,1);
+				star.alpha = Math.random()/2;
+				star.velocity.x = -1;
+				stars.add(star);
+			}			
+			add(stars);
+			
+			
 			
 			//Create sun
 			sun = new FlxSprite((FlxG.width - sunWidth)/2 , (FlxG.height - sunWidth)/2, ImgSun);
@@ -293,7 +310,7 @@ package
 			beam.maxSize = 250;
 			beam.maxRotation = 0;
 			
-			for (var i:int = 0; i < 250; i++)
+			for (i = 0; i < 250; i++)
 			{
 				//Create beam sprite
 				var photon:FlxParticle = new FlxParticle();
@@ -349,7 +366,6 @@ package
 			add(thrust);
 			
 			//Set up universe
-			
 			
 			for (i=0; i < FlxG.level; i++) {
 				newPlanet();
@@ -422,7 +438,8 @@ package
 				gravitate(pl);
 			for each (var ft:FlxSprite in fighters.members)
 				fight(ft);
-				
+			for each (var st:FlxSprite in stars.members)
+				if (st.x < 0) st.x = FlxG.width;
 				
 			TxtCharge.visible = false;
 			if (recharging) {
