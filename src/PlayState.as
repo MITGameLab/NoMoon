@@ -59,8 +59,8 @@ package
 			planet = new FlxSprite(Math.random()*(FlxG.width-planetWidth)+planetWidth/2,Math.random()*FlxG.height-planetWidth+planetWidth/2,ImgPlanet);
 			//planet.makeGraphic(planetWidth, planetWidth, 0xff00aa99);
 			planet.color = 0x00ffaa;
-			planet.maxVelocity.x = 30;
-			planet.maxVelocity.y = 30;
+			planet.maxVelocity.x = 60;
+			planet.maxVelocity.y = 60;
 			planet.acceleration.y = 0;
 			planet.acceleration.x = 0;
 			planet.health = 100;
@@ -74,7 +74,7 @@ package
 			var fighter:FlxSprite;
 			var fromPlanet:FlxSprite = planets.getRandom() as FlxSprite;
 			
-			if (fromPlanet != moon && fromPlanet != sun) {
+			if ((fromPlanet != moon) && (fromPlanet != sun)) {
 				fighter = new FlxSprite(fromPlanet.x+planetWidth/2,fromPlanet.y+planetWidth/2, ImgFighter);
 				//fighter.makeGraphic(fighterWidth, fighterWidth, 0xffffffff);
 				
@@ -87,7 +87,7 @@ package
 				fighter.velocity.x = Math.random()*20-10;
 				fighter.velocity.y = Math.random()*20-10;
 				fighters.add(fighter);
-				Timer.start(Math.random()*10,1,addFighter);
+				Timer.start(Math.random()*30/remaining,1,addFighter);
 			}
 			else
 			{
@@ -104,7 +104,7 @@ package
 				hitPlanet.color -= 0x00000204;
 				hitPlanet.flicker(0.5);
 
-				FlxG.score += Math.random()*10000;
+				FlxG.score -= Math.random()*10000;
 				
 			}
 			if (hitPlanet.health <= 0) {
@@ -114,7 +114,7 @@ package
 
 				hitPlanet.kill();
 				remaining--;
-				FlxG.score += 500000+Math.random()*300000;
+				FlxG.score -= 500000+Math.random()*300000;
 				
 				if (remaining < 1) {
 					add(TxtClear);
@@ -140,7 +140,7 @@ package
 			FlxG.shake(0.005,0.1);
 				
 			hitFighter.kill();
-			FlxG.score += 1;
+			FlxG.score -= 1;
 			
 			power = 0;
 			damage += maxPower/startHealth;
@@ -178,7 +178,7 @@ package
 				sparks.start(true,1);
 				
 				hitFighter.kill();
-				FlxG.score += 1;
+				FlxG.score -= 1;
 				
 			}
 			
@@ -191,17 +191,25 @@ package
 			beam.x = moon.x + moonWidth/2;
 			beam.y = moon.y + moonWidth/2;
 			
-			beam.setXSpeed(moon.velocity.x*8, moon.velocity.x*11);
-			beam.setYSpeed(moon.velocity.y*8, moon.velocity.y*11);
+			var spread:Number = 20/power;
+			
+			var magnitude:Number = FlxU.getDistance(new FlxPoint(0,0),moon.velocity)/30;
+			
+			beam.setXSpeed(moon.velocity.x*8/magnitude, moon.velocity.x*(spread+8)/magnitude);
+			beam.setYSpeed(moon.velocity.y*8/magnitude, moon.velocity.y*(spread+8)/magnitude);
+			
+			
 			
 			if ((power > 0) && !recharging) {
 				power--;
-				beam.start(false,1,0.5/power);				
+				beam.start(false,1,0.005);
+				beam.on = true;
 			} else {
 				recharging = true;
 				chargeMeter.color=0xFFFF0000;
 				TxtCharge.visible = true;
-				beam.kill();
+				//beam.kill();
+				beam.on = false;
 			}
 			
 			FlxG.overlap(beam,planets,hitPlanet);
@@ -212,8 +220,8 @@ package
 		{
 			if (orbiter != sun) {
 				var pull:FlxPoint = new FlxPoint((sun.x + sunWidth/2) - (orbiter.x + orbiter.width/2),(sun.y + sunWidth/2) - (orbiter.y + orbiter.height/2));
-				orbiter.acceleration.x = pull.x;
-				orbiter.acceleration.y = pull.y;
+				orbiter.acceleration.x = pull.x/2;
+				orbiter.acceleration.y = pull.y/2;
 			}
 			
 			if (orbiter.velocity.x > 25)
@@ -246,8 +254,10 @@ package
 			thrust.setXSpeed(-xAccel-25, -xAccel+25);
 			thrust.setYSpeed(-yAccel-25, -yAccel+25);
 		
-			if (!thrust.countLiving())
+			if (!thrust.countLiving()) {
+				thrust.on = true;
 				thrust.start(true,0.1);
+			}
 		}
 		
 		override public function create():void
@@ -280,8 +290,10 @@ package
 			
 			//Create beam
 			beam = new FlxEmitter(moon.x, moon.y, moonWidth);
-			beam.maxSize = 50;
-			for (var i:int = 0; i < 50; i++)
+			beam.maxSize = 250;
+			beam.maxRotation = 0;
+			
+			for (var i:int = 0; i < 250; i++)
 			{
 				//Create beam sprite
 				var photon:FlxParticle = new FlxParticle();
@@ -289,11 +301,13 @@ package
 				photon.exists = false;
 				beam.add(photon);
 			}			
+			beam.on = false;
 			add(beam);
 			
 			//Create explosions
 			explode = new FlxEmitter(0, 0, planetWidth);
 			explode.maxSize = 50;
+			explode.maxRotation = 0;
 			for (i = 0; i < 50; i++)
 			{
 				//Create explode sprite
@@ -308,6 +322,7 @@ package
 			//Ship explosion
 			sparks = new FlxEmitter(0, 0, fighterWidth);
 			sparks.maxSize = 15;
+			sparks.maxRotation = 0;
 			for (i = 0; i < 15; i++)
 			{
 				//Create explode sprite
@@ -321,6 +336,7 @@ package
 			//Create thrust
 			thrust = new FlxEmitter(moon.x, moon.y, moonWidth);
 			thrust.maxSize = 5;
+			thrust.maxRotation = 0;
 			for (i = 0; i < 5; i++)
 			{
 				//Create thrust sprite
@@ -329,6 +345,7 @@ package
 				impulse.exists = false;
 				thrust.add(impulse);
 			}
+			thrust.on = false;
 			add(thrust);
 			
 			//Set up universe
@@ -372,12 +389,12 @@ package
 			
 			add(new FlxSprite(FlxG.width-15,2,ImgRebel));
 			
-			TxtStart = new FlxText(0,FlxG.height-60,FlxG.width,"Crush the rebellion!");
+			TxtStart = new FlxText(0,FlxG.height-60,FlxG.width,"Crush the rebels!");
 			TxtStart.alignment = "center";
 			TxtStart.size = 24;
 			add(TxtStart);
 			
-			TxtEnd = new FlxText(0,FlxG.height-60,FlxG.width,"The empire has fallen!");
+			TxtEnd = new FlxText(0,FlxG.height-60,FlxG.width,"NO MOON");
 			TxtEnd.alignment = "center";
 			TxtEnd.size = 24;
 			
@@ -433,7 +450,8 @@ package
 			if(FlxG.keys.SPACE) 
 				fire();
 			else {
-				beam.kill();
+				//beam.kill();
+				beam.on = false;
 				if (power < maxPower-damage)
 					power++;
 				else
