@@ -237,11 +237,35 @@ package
 		
 		private function fight(fighter:FlxSprite):void
 		{
-			var pull:FlxPoint = new FlxPoint((moon.x + moonWidth/2) - (fighter.x + fighter.width/2),(moon.y + moonWidth/2) - (fighter.y + fighter.height/2));
+			var pull:FlxPoint = new FlxPoint((moon.x + moonWidth/2) - (fighter.x + fighter.width/2),(moon.y + moonWidth/2) - (fighter.y + fighter.height/2));	
+			
+			//var leader:FlxSprite = fighters.getFirstAlive() as FlxSprite;
+			
+			//pull.x -= fighter.x - leader.x;
+			//pull.y -= fighter.y - leader.y;
+				
+				
 			fighter.acceleration.x = 4*pull.x + FlxG.random()*10-5;
 			fighter.acceleration.y = 4*pull.y + FlxG.random()*10-5;
 
 			fighter.angle = FlxU.getAngle(new FlxPoint(0,0),fighter.velocity);
+		}
+		
+		
+		private function evade(fighter1:FlxSprite, fighter2:FlxSprite):void
+		{
+			var pull:FlxPoint = new FlxPoint((fighter1.x + fighter1.width/2) - (fighter2.x + fighter2.width/2),(fighter1.y + fighter1.height/2) - (fighter2.y + fighter2.height/2));	
+			
+			//var leader:FlxSprite = fighters.getFirstAlive() as FlxSprite;
+			
+			//pull.x -= fighter.x - leader.x;
+			//pull.y -= fighter.y - leader.y;
+			
+			
+			fighter1.acceleration.x = -2*pull.x + FlxG.random()*10-5;
+			fighter1.acceleration.y = -2*pull.y + FlxG.random()*10-5;
+			
+			fighter1.angle = FlxU.getAngle(new FlxPoint(0,0),fighter1.velocity);
 		}
 		
 		private function move(xAccel:Number, yAccel:Number):void
@@ -441,7 +465,7 @@ package
 			for each (var st:FlxSprite in stars.members)
 				if (st.x < 0) st.x = FlxG.width;
 				
-		
+			FlxG.overlap(fighters,fighters,evade);
 				
 			TxtCharge.visible = false;
 			if (recharging) {
