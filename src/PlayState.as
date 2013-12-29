@@ -57,7 +57,7 @@ package
 		private function newPlanet():void
 		{
 			var planet:FlxSprite;
-			planet = new FlxSprite(Math.random()*(FlxG.width-planetWidth)+planetWidth/2,Math.random()*FlxG.height-planetWidth+planetWidth/2,ImgPlanet);
+			planet = new FlxSprite(FlxG.random()*(FlxG.width-planetWidth)+planetWidth/2,FlxG.random()*FlxG.height-planetWidth+planetWidth/2,ImgPlanet);
 			//planet.makeGraphic(planetWidth, planetWidth, 0xff00aa99);
 			planet.color = 0x00ffaa;
 			planet.maxVelocity.x = 60;
@@ -65,8 +65,8 @@ package
 			planet.acceleration.y = 0;
 			planet.acceleration.x = 0;
 			planet.health = 100;
-			planet.velocity.x = Math.random()*20-10;
-			planet.velocity.y = Math.random()*20-10;
+			planet.velocity.x = FlxG.random()*20-10;
+			planet.velocity.y = FlxG.random()*20-10;
 			planets.add(planet);
 		}
 		
@@ -85,10 +85,10 @@ package
 				fighter.acceleration.y = 0;
 				fighter.acceleration.x = 0;
 				fighter.health = 1;
-				fighter.velocity.x = Math.random()*20-10;
-				fighter.velocity.y = Math.random()*20-10;
+				fighter.velocity.x = FlxG.random()*20-10;
+				fighter.velocity.y = FlxG.random()*20-10;
 				fighters.add(fighter);
-				Timer.start(Math.random()*30/remaining,1,addFighter);
+				Timer.start(FlxG.random()*30/remaining,1,addFighter);
 			}
 			else
 			{
@@ -105,7 +105,7 @@ package
 				hitPlanet.color -= 0x00000204;
 				hitPlanet.flicker(0.5);
 
-				FlxG.score -= Math.random()*10000;
+				FlxG.score -= FlxG.random()*10000;
 				
 			}
 			if (hitPlanet.health <= 0) {
@@ -115,7 +115,7 @@ package
 
 				hitPlanet.kill();
 				remaining--;
-				FlxG.score -= 500000+Math.random()*300000;
+				FlxG.score -= 500000+FlxG.random()*300000;
 				
 				if (remaining < 1) {
 					add(TxtClear);
@@ -238,8 +238,8 @@ package
 		private function fight(fighter:FlxSprite):void
 		{
 			var pull:FlxPoint = new FlxPoint((moon.x + moonWidth/2) - (fighter.x + fighter.width/2),(moon.y + moonWidth/2) - (fighter.y + fighter.height/2));
-			fighter.acceleration.x = 4*pull.x + Math.random()*10-5;
-			fighter.acceleration.y = 4*pull.y + Math.random()*10-5;
+			fighter.acceleration.x = 4*pull.x + FlxG.random()*10-5;
+			fighter.acceleration.y = 4*pull.y + FlxG.random()*10-5;
 
 			fighter.angle = FlxU.getAngle(new FlxPoint(0,0),fighter.velocity);
 		}
@@ -276,9 +276,9 @@ package
 			for (var i:int = 0; i < 50; i++)
 			{
 				//Create star
-				var star:FlxSprite = new FlxSprite(Math.random()*FlxG.width,Math.random()*FlxG.height);
+				var star:FlxSprite = new FlxSprite(FlxG.random()*FlxG.width,FlxG.random()*FlxG.height);
 				star.makeGraphic(1,1);
-				star.alpha = Math.random()/2;
+				star.alpha = FlxG.random()/2;
 				star.velocity.x = -1;
 				stars.add(star);
 			}			
@@ -440,6 +440,8 @@ package
 				fight(ft);
 			for each (var st:FlxSprite in stars.members)
 				if (st.x < 0) st.x = FlxG.width;
+				
+		
 				
 			TxtCharge.visible = false;
 			if (recharging) {
