@@ -14,6 +14,13 @@ package
 		[Embed(source="assets/rebel.png")] 						private	var ImgRebel:Class;
 		[Embed(source="assets/fighter.png")] 					private	var ImgFighter:Class;
 		
+		[Embed(source="assets/boom.mp3")] 						private var SndBoom:Class;
+		[Embed(source="assets/impact.mp3")] 					private var SndImpact:Class;
+		[Embed(source="assets/laser.mp3")] 						private var SndLaser:Class;
+		[Embed(source="assets/planet.mp3")] 					private var SndPlanet:Class;
+		[Embed(source="assets/power.mp3")] 						private var SndPower:Class;
+		[Embed(source="assets/takeoff.mp3")] 					private var SndTakeoff:Class;
+		
 		public var moon:FlxSprite;
 		public var chargeMeter:FlxSprite;
 		public var damageMeter:FlxSprite;
@@ -75,7 +82,7 @@ package
 			var fighter:FlxSprite;
 			var fromPlanet:FlxSprite = planets.getRandom() as FlxSprite;
 			
-			if ((fromPlanet != moon) && (fromPlanet != sun)) {
+			if ((fromPlanet != moon) && (fromPlanet != sun) && (fromPlanet.alive)) {
 				fighter = new FlxSprite(fromPlanet.x+planetWidth/2,fromPlanet.y+planetWidth/2, ImgFighter);
 				//fighter.makeGraphic(fighterWidth, fighterWidth, 0xffffffff);
 				
@@ -87,6 +94,9 @@ package
 				fighter.health = 1;
 				fighter.velocity.x = FlxG.random()*20-10;
 				fighter.velocity.y = FlxG.random()*20-10;
+				
+				FlxG.play(SndTakeoff);
+				
 				fighters.add(fighter);
 				Timer.start(FlxG.random()*30/remaining,1,addFighter);
 			}
@@ -113,6 +123,9 @@ package
 				explode.y = hitPlanet.y + planetWidth/2;
 				explode.start(true,3);
 
+				
+				FlxG.play(SndPlanet);
+				
 				hitPlanet.kill();
 				remaining--;
 				FlxG.score -= 500000+FlxG.random()*300000;
@@ -140,6 +153,7 @@ package
 
 			FlxG.shake(0.005,0.1);
 				
+			FlxG.play(SndImpact);
 			hitFighter.kill();
 			FlxG.score -= 1;
 			
@@ -152,6 +166,7 @@ package
 				explode.y = hitMoon.y + moonWidth/2;
 				explode.start(true,10);
 				
+				FlxG.play(SndBoom);
 				hitMoon.kill();
 				
 				add(TxtEnd);
@@ -205,6 +220,7 @@ package
 				power--;
 				beam.start(false,1,0.005);
 				beam.on = true;
+				FlxG.play(SndLaser);
 			} else {
 				recharging = true;
 				chargeMeter.color=0xFFFF0000;
@@ -469,8 +485,10 @@ package
 				
 			TxtCharge.visible = false;
 			if (recharging) {
-				if (power < 1)
+				if (power < 1) {
 					TxtCharge.visible = true;
+					FlxG.play(SndPower);
+				}
 				chargeMeter.color = 0xFFFF9900;
 			} else
 				chargeMeter.color = chargeColor;
