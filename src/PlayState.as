@@ -20,6 +20,8 @@ package
 		[Embed(source="assets/planet.mp3")] 					private var SndPlanet:Class;
 		[Embed(source="assets/power.mp3")] 						private var SndPower:Class;
 		[Embed(source="assets/takeoff.mp3")] 					private var SndTakeoff:Class;
+		[Embed(source="assets/hit.mp3")] 						private var SndHit:Class;
+		[Embed(source="assets/alert.mp3")] 						private var SndAlert:Class;
 		
 		public var moon:FlxSprite;
 		public var chargeMeter:FlxSprite;
@@ -122,7 +124,6 @@ package
 				explode.x = hitPlanet.x + planetWidth/2;
 				explode.y = hitPlanet.y + planetWidth/2;
 				explode.start(true,3);
-
 				
 				FlxG.play(SndPlanet);
 				
@@ -193,6 +194,7 @@ package
 				sparks.y = hitFighter.y + fighterWidth/2;
 				sparks.start(true,1);
 				
+				FlxG.play(SndHit);
 				hitFighter.kill();
 				FlxG.score -= 1;
 				
@@ -220,11 +222,12 @@ package
 				power--;
 				beam.start(false,1,0.005);
 				beam.on = true;
-				FlxG.play(SndLaser);
+				FlxG.play(SndLaser,0.3);
 			} else {
 				recharging = true;
 				chargeMeter.color=0xFFFF0000;
 				TxtCharge.visible = true;
+				FlxG.play(SndAlert);
 				//beam.kill();
 				beam.on = false;
 			}
@@ -459,7 +462,7 @@ package
 			TxtCharge.size = 8;
 			add(TxtCharge);
 			
-			
+			FlxG.play(SndPower);
 			
 			
 			
@@ -485,10 +488,8 @@ package
 				
 			TxtCharge.visible = false;
 			if (recharging) {
-				if (power < 1) {
+				if (power < 1) 
 					TxtCharge.visible = true;
-					FlxG.play(SndPower);
-				}
 				chargeMeter.color = 0xFFFF9900;
 			} else
 				chargeMeter.color = chargeColor;
@@ -511,12 +512,12 @@ package
 			if(FlxG.keys.SPACE) 
 				fire();
 			else {
-				//beam.kill();
 				beam.on = false;
-				if (power < maxPower-damage)
+				if (power < maxPower-damage) 
 					power++;
-				else
+				else 
 					recharging = false;
+				
 			}
 			
 			
