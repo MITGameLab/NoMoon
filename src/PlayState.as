@@ -22,6 +22,7 @@ package
 		[Embed(source="assets/takeoff.mp3")] 					private var SndTakeoff:Class;
 		[Embed(source="assets/hit.mp3")] 						private var SndHit:Class;
 		[Embed(source="assets/alert.mp3")] 						private var SndAlert:Class;
+		[Embed(source="assets/music.mp3")] 						private var SndMusic:Class;
 		
 		public var moon:FlxSprite;
 		public var chargeMeter:FlxSprite;
@@ -125,7 +126,9 @@ package
 				explode.y = hitPlanet.y + planetWidth/2;
 				explode.start(true,3);
 				
+				FlxG.pauseSounds();
 				FlxG.play(SndPlanet);
+				FlxG.resumeSounds();
 				
 				hitPlanet.kill();
 				remaining--;
@@ -194,7 +197,7 @@ package
 				sparks.y = hitFighter.y + fighterWidth/2;
 				sparks.start(true,1);
 				
-				FlxG.play(SndHit);
+				FlxG.play(SndImpact);
 				hitFighter.kill();
 				FlxG.score -= 1;
 				
@@ -463,8 +466,7 @@ package
 			add(TxtCharge);
 			
 			FlxG.play(SndPower);
-			
-			
+			FlxG.playMusic(SndMusic);
 			
 			// Create timers
 			Timer = new FlxTimer();
