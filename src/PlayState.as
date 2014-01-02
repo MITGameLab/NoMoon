@@ -62,12 +62,11 @@ package
 		
 		private var power:int;
 		private var damage:int = 0;
-		private var Timer:FlxTimer;
+		private var ShipTimer:FlxTimer;
+		private var EndTimer:FlxTimer;
 		private var recharging:Boolean = false;
 		private var StartGame:Boolean = true;
-		private var EndGame:Boolean=false;
 		
-		private var TxtClear:FlxText;
 		private var TxtStart:FlxText;
 		private var TxtEnd:FlxText;
 		private var TxtScore:FlxText;
@@ -110,11 +109,11 @@ package
 				FlxG.play(SndTakeoff);
 				
 				fighters.add(fighter);
-				Timer.start(FlxG.random()*30/remaining,1,addFighter);
+				ShipTimer.start(FlxG.random()*30/remaining,1,addFighter);
 			}
 			else
 			{
-				Timer.start(1,1,addFighter);
+				ShipTimer.start(1,1,addFighter);
 			}
 			TxtStart.visible=false;
 		}
@@ -143,11 +142,6 @@ package
 				remaining--;
 				FlxG.score -= 500000+FlxG.random()*300000;
 				
-				if (remaining < 1) {
-					add(TxtClear);
-					EndGame = true;
-					Timer.start(5);
-				}
 			}
 			
 			TxtScore.text = FlxG.score.toString();
@@ -181,11 +175,14 @@ package
 				
 				hitCeptor.kill();
 				
+				
 				TxtEnd.text = "NO DEFENSE";
 				TxtEnd.visible = true;
-				Timer.start(5);
-				
-				
+				if (EndTimer.paused) {
+					
+					EndTimer.paused = false;
+					EndTimer.start(5);
+				}
 			}
 			
 			
@@ -226,12 +223,6 @@ package
 				FlxG.resumeSounds();
 				
 				hitMoon.kill();
-				
-				TxtEnd.text = "NO MOON";
-				TxtEnd.visible=true;
-				
-				EndGame = true;
-				Timer.start(10);
 				
 			}
 			
@@ -413,7 +404,7 @@ package
 		override public function create():void
 		{
 			FlxG.bgColor = 0xff101010;
-			planets = new FlxGroup(10);
+			planets = new FlxGroup(1000);
 			fighters = new FlxGroup(1000);
 			stars = new FlxGroup(50);
 			
@@ -595,10 +586,7 @@ package
 			
 			//Create text variables
 			
-			TxtClear = new FlxText(0,FlxG.height/2-70,FlxG.width,"Sector clear");
-			TxtClear.alignment = "center";
-			TxtClear.size = 24;
-			
+
 			TxtScore = new FlxText(0,0,FlxG.width-15,FlxG.score.toString());
 			TxtScore.size = 8;
 			TxtScore.alignment = "right";
@@ -626,9 +614,11 @@ package
 			FlxG.playMusic(SndMusic);
 			
 			// Create timers
-			Timer = new FlxTimer();
-			Timer.start(3,1,addFighter);
-			EndGame = false;			
+			ShipTimer = new FlxTimer();
+			ShipTimer.start(3,1,addFighter);
+			
+			EndTimer = new FlxTimer();
+			EndTimer.paused = true;
 		}
 
 		
@@ -688,9 +678,8 @@ package
 				if (!moon.alive) {
 						moon.revive();
 						moon.health = moonHealth;
-						TxtEnd.visible=false;
-						if (remaining > 0) EndGame=false;
-						ceptor.color = ceptorColor;
+						moon.color = moonColor;
+						damage = 0;
 					}
 			if(FlxG.keys.TWO) 
 				if (!ceptor.alive) {
@@ -718,7 +707,7 @@ package
 			
 			
 			FlxG.overlap(beam,planets,hitPlanet);
-			//FlxG.overlap(beam,fighters,hitFighter);
+			//FlxG.overlap(beam,fighters,hitFighter); // Only for 1P testing
 			FlxG.overlap(bullets,fighters,hitFighter);
 			
 			FlxG.overlap(fighters,moon,hitMoon);
@@ -726,22 +715,38 @@ package
 			planets.sort("alpha",ASCENDING);
 			
 			
-			if (Timer.finished) {
-				TxtEnd.visible = false;
-				if (EndGame) {
-					if (remaining < 1) {
-						FlxG.level++;
-						if (ceptor.alive)
-							FlxG.level = -FlxU.abs(FlxG.level);
-						FlxG.resetState();
-					}
-					if (!moon.alive) {
-						FlxG.level = 3;
-						FlxG.resetState();
-					}
+			if (!moon.alive || (remaining < 1)) { // All possible endgame reasons
+
+				if (!moon.alive) 
+					TxtEnd.text = "NO MOON";
+				if (remaining < 1)
+					TxtEnd.text = "Sector Clear";
+				
+				TxtEnd.visible = true;
+				
+				if (EndTimer.paused) {
+					EndTimer.paused = false;
+					EndTimer.start(5);
 				}
 			}
 			
+			
+			if (EndTimer.finished) {
+				
+				TxtEnd.visible = false;
+				if (remaining < 1) {
+					FlxG.level++;
+					if (ceptor.alive)
+						FlxG.level = -FlxU.abs(FlxG.level);
+					FlxG.resetState();
+				}
+				else if (!(moon.alive || ceptor.alive)) {
+					FlxG.level = 3;
+					FlxG.resetState();
+				}
+				EndTimer.paused = true;
+			}
+		
 			super.update();
 			
 		}
