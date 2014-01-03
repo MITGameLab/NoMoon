@@ -655,7 +655,6 @@ package
 			if (moon.x > FlxG.width-moonBorder) moveMoon(-moon.maxVelocity.x,0);
 			if (moon.y < moonBorder) moveMoon(0, moon.maxVelocity.y);
 			if (moon.y > FlxG.height-chargeWidth-moonBorder) moveMoon(0, -moon.maxVelocity.y);
-			
 				
 			FlxG.overlap(fighters,fighters,evade);
 				
@@ -687,7 +686,7 @@ package
 					
 					if ((target != moon) && (target != sun) && ((diffAngle < 10) || diffAngle > 350)) {
 					//if ((target != moon) && (target != sun) && ((diffAngle > 75) && diffAngle < 105)) {
-						//moveMoon(-moon.velocity.x, -moon.velocity.y);
+						moveMoon(target.velocity.x + moon.acceleration.x, target.velocity.y + moon.acceleration.y);
 						willShoot = true;
 					}
 					
