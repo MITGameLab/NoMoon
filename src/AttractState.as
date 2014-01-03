@@ -5,14 +5,13 @@ package
 	import org.flixel.*;
 
 	
-	public class PlayState extends FlxState
+	public class AttractState extends FlxState
 	{
 		
 		[Embed(source="assets/planet.png")] 					private	var ImgPlanet:Class;
 		[Embed(source="assets/sun.png")] 						private	var ImgSun:Class;
 		[Embed(source="assets/moon.png")] 						private	var ImgMoon:Class;
 		[Embed(source="assets/ceptor.png")] 					private	var ImgCeptor:Class;
-		[Embed(source="assets/rebel.png")] 						private	var ImgRebel:Class;
 		[Embed(source="assets/fighter.png")] 					private	var ImgFighter:Class;
 		
 		[Embed(source="assets/boom.mp3")] 						private var SndBoom:Class;
@@ -23,7 +22,6 @@ package
 		[Embed(source="assets/takeoff.mp3")] 					private var SndTakeoff:Class;
 		[Embed(source="assets/hit.mp3")] 						private var SndHit:Class;
 		[Embed(source="assets/alert.mp3")] 						private var SndAlert:Class;
-		[Embed(source="assets/music.mp3")] 						private var SndMusic:Class;
 		[Embed(source="assets/ceptor.mp3")] 					private var SndCeptor:Class;
 		[Embed(source="assets/launch.mp3")] 					private var SndLaunch:Class;
 		
@@ -60,21 +58,39 @@ package
 		private const ceptorTurn:int = 50;
 		private const moonHealth:int = 10;
 		private const ceptorHealth:int = 3;
+		private const timerInterval:int = 4;
+		private const moonBorder:int = 50;
 		
+		private var helpPhrase:int = -1;
 		private var power:int;
 		private var damage:int = 0;
 		private var ShipTimer:FlxTimer;
 		private var EndTimer:FlxTimer;
+		private var HelpTimer:FlxTimer;
 		private var recharging:Boolean = false;
 		private var StartGame:Boolean = true;
+		private var willShoot:Boolean = false;
 		
 		private var TxtStart:FlxText;
 		private var TxtEnd:FlxText;
-		private var TxtScore:FlxText;
 		private var TxtCharge:FlxText;
 		
-		private function newPlanet():void
-		{
+		private const helpPhrases:Array = new Array(
+			"Left stick: Fly Moon", "Left button: Moon beam", 
+			"Beware of rebels", "P2 button: Launch Fighter", 
+			"Right stick: Fly Fighter", "Right button: Fighter laser", "P1 button: Start Game");
+		
+		
+		private function helpText():void {
+			if (HelpTimer.finished) {
+				helpPhrase++;
+				if (helpPhrase >= helpPhrases.length) helpPhrase = 0;
+				TxtStart.text = helpPhrases[helpPhrase];
+				HelpTimer.start(timerInterval,1);
+			}
+		}
+		
+		private function newPlanet():void {
 			var planet:FlxSprite;
 			planet = new FlxSprite(FlxG.random()*(FlxG.width-planetWidth)+planetWidth/2,FlxG.random()*FlxG.height-planetWidth+planetWidth/2,ImgPlanet);
 			//planet.makeGraphic(planetWidth, planetWidth, 0xff00aa99);
@@ -116,7 +132,6 @@ package
 			{
 				ShipTimer.start(1,1,addFighter);
 			}
-			TxtStart.visible=false;
 		}
 		
 		private function hitPlanet(beamPhoton:FlxParticle, hitPlanet:FlxSprite):void
@@ -127,7 +142,6 @@ package
 				hitPlanet.color -= 0x000204;
 				hitPlanet.flicker(0.5);
 
-				FlxG.score -= FlxG.random()*10000;
 				
 			}
 			if (hitPlanet.health <= 0) {
@@ -141,11 +155,9 @@ package
 				
 				hitPlanet.kill();
 				remaining--;
-				FlxG.score -= 500000+FlxG.random()*300000;
 				
 			}
 			
-			TxtScore.text = FlxG.score.toString();
 		}
 		
 		private function hitCeptor(hitFighter:FlxSprite, hitCeptor:FlxSprite):void
@@ -162,7 +174,6 @@ package
 			
 			FlxG.play(SndImpact);
 			hitFighter.kill();
-			FlxG.score -= 1;
 		
 			
 			if (hitCeptor.health <= 0) {
@@ -182,14 +193,13 @@ package
 				if (EndTimer.paused) {
 					
 					EndTimer.paused = false;
-					EndTimer.start(4);
+					EndTimer.start(8);
 				}
 			}
 			
 			
 			damageMeter.x = FlxG.width*(1-damage/maxPower);
 			
-			TxtScore.text = FlxG.score.toString();
 		}
 		
 		
@@ -208,7 +218,6 @@ package
 				
 			FlxG.play(SndImpact);
 			hitFighter.kill();
-			FlxG.score -= 1;
 			
 			power = 0;
 			damage += maxPower/moonHealth;
@@ -230,7 +239,6 @@ package
 
 			damageMeter.x = FlxG.width*(1-damage/maxPower);
 			
-			TxtScore.text = FlxG.score.toString();
 		}
 		
 		
@@ -245,11 +253,8 @@ package
 				
 				FlxG.play(SndImpact);
 				hitFighter.kill();
-				FlxG.score -= 1;
 				
 			}
-			
-			TxtScore.text = FlxG.score.toString();
 		}
 		
 		private function ceptorFire():void
@@ -330,20 +335,23 @@ package
 			var ceptorPos:FlxPoint = new FlxPoint(ceptor.x,ceptor.y);
 			var fighterPos:FlxPoint = new FlxPoint(fighter.x,fighter.y);
 			
-			if ((FlxU.getDistance(fighterPos,ceptorPos) > FlxU.getDistance(fighterPos,moonPos)) || !ceptor.alive)
-				pull = new FlxPoint((moon.x + moonWidth/2) - (fighter.x + fighter.width/2),(moon.y + moonWidth/2) - (fighter.y + fighter.height/2));	
-			else	
-				pull = new FlxPoint((ceptorPos.x + ceptorWidth/2) - (fighter.x + fighter.width/2),(ceptorPos.y + ceptorWidth/2) - (fighter.y + fighter.height/2));	
-			//var leader:FlxSprite = fighters.getFirstAlive() as FlxSprite;
+			if (fighter.alive) {
+				if ((FlxU.getDistance(fighterPos,ceptorPos) > FlxU.getDistance(fighterPos,moonPos)) || !ceptor.alive) {
+					pull = new FlxPoint((moon.x + moonWidth/2) - (fighter.x + fighter.width/2),(moon.y + moonWidth/2) - (fighter.y + fighter.height/2));	
+					moveMoon(((moon.x + moonWidth/2) - (fighter.x + fighter.width/2))/2,  ((moon.y + moonWidth/2) - (fighter.y + fighter.height/2)/2));
+					
+				} else {	
+					pull = new FlxPoint((ceptorPos.x + ceptorWidth/2) - (fighter.x + fighter.width/2),(ceptorPos.y + ceptorWidth/2) - (fighter.y + fighter.height/2));	
+					if (FlxU.getDistance(fighterPos,ceptorPos) < 100) ceptorFire();
+					
+				}
+				
+				fighter.acceleration.x = 4*pull.x + FlxG.random()*10-5;
+				fighter.acceleration.y = 4*pull.y + FlxG.random()*10-5;
+	
+				fighter.angle = FlxU.getAngle(new FlxPoint(0,0),fighter.velocity);
+			}
 			
-			//pull.x -= fighter.x - leader.x;
-			//pull.y -= fighter.y - leader.y;
-				
-				
-			fighter.acceleration.x = 4*pull.x + FlxG.random()*10-5;
-			fighter.acceleration.y = 4*pull.y + FlxG.random()*10-5;
-
-			fighter.angle = FlxU.getAngle(new FlxPoint(0,0),fighter.velocity);
 		}
 		
 		
@@ -386,8 +394,8 @@ package
 		private function moveCeptor(xAccel:Number, yAccel:Number):void
 		{ 
 			if (ceptor.alive) {
-				ceptor.acceleration.x=xAccel;
-				ceptor.acceleration.y=yAccel;
+				ceptor.acceleration.x=2*xAccel;
+				ceptor.acceleration.y=2*yAccel;
 				
 				jets.x = ceptor.x + ceptorWidth/2;
 				jets.y = ceptor.y + ceptorWidth/2;
@@ -404,13 +412,14 @@ package
 		
 		override public function create():void
 		{
+			FlxG.score = 0;
+			FlxG.level = 3;
 			FlxG.bgColor = 0xff101010;
 			planets = new FlxGroup(1000);
 			fighters = new FlxGroup(1000);
 			stars = new FlxGroup(50);
 			
-			if (FlxU.abs(FlxG.level) < 3) FlxG.level = 3;
-			remaining = FlxU.abs(FlxG.level);
+			remaining = 10;
 			
 			
 			
@@ -443,6 +452,7 @@ package
 			moon.acceleration.y = 0;
 			moon.acceleration.x = 0;
 			moon.velocity.x = 40;
+			moon.velocity.y = 0;
 			moon.health = moonHealth;
 			planets.add(moon);	
 			
@@ -455,6 +465,8 @@ package
 			ceptor.maxVelocity.y = 80;
 			ceptor.acceleration.y = 0;
 			ceptor.acceleration.x = 0;
+			ceptor.velocity.x = 40;
+			ceptor.velocity.y = -50;
 			ceptor.health = ceptorHealth;
 			
 			//Create beam
@@ -559,11 +571,8 @@ package
 			add(planets);
 			
 			add(ceptor);
+			ceptor.kill();
 			
-			if (FlxG.level > 0) 
-				ceptor.kill();
-			else
-				FlxG.level = remaining;
 			
 			add(fighters);
 			
@@ -588,16 +597,10 @@ package
 			//Create text variables
 			
 
-			TxtScore = new FlxText(0,0,FlxG.width-15,FlxG.score.toString());
-			TxtScore.size = 8;
-			TxtScore.alignment = "right";
-			add(TxtScore);
 			
-			add(new FlxSprite(FlxG.width-15,2,ImgRebel));
-			
-			TxtStart = new FlxText(0,FlxG.height-60,FlxG.width,"Crush the rebels!");
+			TxtStart = new FlxText(0,50,FlxG.width,"By Philip Tan, MIT Game Lab");
 			TxtStart.alignment = "center";
-			TxtStart.size = 24;
+			TxtStart.size = 16;
 			add(TxtStart);
 			
 			TxtEnd = new FlxText(0,FlxG.height-60,FlxG.width,"NO MOON");
@@ -612,14 +615,17 @@ package
 			add(TxtCharge);
 			
 			FlxG.play(SndPower);
-			FlxG.playMusic(SndMusic);
+			//FlxG.playMusic(SndMusic);
 			
 			// Create timers
 			ShipTimer = new FlxTimer();
-			ShipTimer.start(3,1,addFighter);
+			ShipTimer.start(timerInterval*3+1,1,addFighter);
 			
 			EndTimer = new FlxTimer();
-			EndTimer.paused = true;
+			EndTimer.start(timerInterval*4+1,1);
+			
+			HelpTimer = new FlxTimer();
+			HelpTimer.start(timerInterval,1);
 		}
 
 		
@@ -636,10 +642,19 @@ package
 				
 			gravitate(ceptor);
 				
+			
+			moveCeptor((3*(moon.x + moon.width/2) + (sun.x + sun.width/2))/4 - (ceptor.x + ceptorWidth/2), (3*(moon.y + moon.height/2)+(sun.y + sun.height/2))/4 - (ceptor.y + ceptorWidth/2));
+			
 			if ((ceptor.x < 0) && (ceptor.velocity.x < 0)) ceptor.x = FlxG.width;
 			if ((ceptor.x > FlxG.width) && (ceptor.velocity.x > 0)) ceptor.x = 0;
 			if ((ceptor.y < 0) && (ceptor.velocity.y < 0)) ceptor.y = FlxG.height-chargeWidth;
 			if ((ceptor.y > FlxG.height-chargeWidth) && (ceptor.velocity.y > 0)) ceptor.y = 0;
+			
+			
+			if (moon.x < moonBorder) moveMoon(moon.maxVelocity.x,0);
+			if (moon.x > FlxG.width-moonBorder) moveMoon(-moon.maxVelocity.x,0);
+			if (moon.y < moonBorder) moveMoon(0, moon.maxVelocity.y);
+			if (moon.y > FlxG.height-chargeWidth-moonBorder) moveMoon(0, -moon.maxVelocity.y);
 			
 				
 			FlxG.overlap(fighters,fighters,evade);
@@ -654,53 +669,34 @@ package
 			
 			chargeMeter.x=FlxG.width*(power/100-1);
 
-			if(FlxG.keys.LEFT)
-				moveMoon(-moon.maxVelocity.x, moon.acceleration.y);
-			if(FlxG.keys.RIGHT)
-				moveMoon(moon.maxVelocity.x, moon.acceleration.y);
-			if(FlxG.keys.UP)
-				moveMoon(moon.acceleration.x, -moon.maxVelocity.y);
-			if(FlxG.keys.DOWN)
-				moveMoon(moon.acceleration.x, moon.maxVelocity.y);
 			
-			if(FlxG.keys.A)
-				moveCeptor(-ceptorTurn, ceptor.acceleration.y);
-			if(FlxG.keys.D)
-				moveCeptor(ceptorTurn, ceptor.acceleration.y);
-			if(FlxG.keys.W)
-				moveCeptor(ceptor.acceleration.x, -ceptorTurn);
-			if(FlxG.keys.S)
-				moveCeptor(ceptor.acceleration.x, ceptorTurn);
-			
-			if(FlxG.keys.SPACE) 
-				ceptorFire();
 			
 			if(FlxG.keys.ONE)
-				if (!moon.alive) {
-						moon.revive();
-						moon.health = moonHealth;
-						moon.color = moonColor;
-						damage = 0;
-						power = 0;
-						damageMeter.x = FlxG.width;
-						recharging = true;
+				FlxG.switchState(new PlayState());
+				
+			
+			
+			willShoot = false;
+			if (!recharging && (moon.alive) && (remaining > 0)) {
+				
+				for each (var target:FlxSprite in planets.members) {
+					var diffAngle: Number = FlxU.abs(FlxU.getAngle(new FlxPoint(0,0),moon.velocity) - FlxU.getAngle(new FlxPoint(moon.x,moon.y),new FlxPoint(target.x,target.y)));
+					//var diffAngle: Number = FlxU.abs(moon.angle - FlxU.getAngle(new FlxPoint(target.x-moon.x, target.y-moon.y)));
+
+					
+					
+					if ((target != moon) && (target != sun) && ((diffAngle < 10) || diffAngle > 350)) {
+					//if ((target != moon) && (target != sun) && ((diffAngle > 75) && diffAngle < 105)) {
+						//moveMoon(-moon.velocity.x, -moon.velocity.y);
+						willShoot = true;
 					}
-			if(FlxG.keys.TWO) 
-				if (!ceptor.alive) {
-					ceptor.x = moon.x;
-					ceptor.y = moon.y;
-					ceptor.velocity.x = -moon.velocity.x/2;
-					ceptor.velocity.y = -moon.velocity.y/2;
-					ceptor.revive();
-					ceptor.health = ceptorHealth;
-					ceptor.color = ceptorColor;
-					TxtEnd.visible=false;
-					FlxG.play(SndLaunch);
-				}
+					
+				}	
+			}
 			
-			
-			if(FlxG.keys.CONTROL) 
+			if (willShoot)
 				moonFire();
+				
 			else {
 				beam.on = false;
 				if (power < maxPower-damage) 
@@ -711,6 +707,9 @@ package
 			
 			
 			
+			helpText();
+			
+			
 			FlxG.overlap(beam,planets,hitPlanet);
 			//FlxG.overlap(beam,fighters,hitFighter); // Only for 1P testing
 			FlxG.overlap(bullets,fighters,hitFighter);
@@ -718,6 +717,7 @@ package
 			FlxG.overlap(fighters,moon,hitMoon);
 			FlxG.overlap(fighters,ceptor,hitCeptor);
 			planets.sort("alpha",ASCENDING);
+			
 			
 			
 			if (!moon.alive || (remaining < 1)) { // All possible endgame reasons
@@ -739,16 +739,20 @@ package
 			if (EndTimer.finished) {
 				
 				TxtEnd.visible = false;
-				if (remaining < 1) {
-					FlxG.level++;
-					if (ceptor.alive)
-						FlxG.level = -FlxU.abs(FlxG.level);
+				if ((remaining < 1) || !moon.alive)
 					FlxG.resetState();
+				if (!ceptor.alive) {
+					ceptor.x = moon.x;
+					ceptor.y = moon.y;
+					ceptor.velocity.x = -moon.velocity.x/2;
+					ceptor.velocity.y = -moon.velocity.y/2;
+					ceptor.revive();
+					ceptor.health = ceptorHealth;
+					ceptor.color = ceptorColor;
+					TxtEnd.visible=false;
+					FlxG.play(SndLaunch);
 				}
-				else if (!(moon.alive || ceptor.alive)) {
-					FlxG.level = 3;
-					FlxG.resetState();
-				}
+					
 				EndTimer.paused = true;
 			}
 		

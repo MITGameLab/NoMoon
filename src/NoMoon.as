@@ -7,7 +7,7 @@ package
 	{
 		public function NoMoon()
 		{
-			super(400,300,PlayState,3);
+			super(400,300,StartState,3);
 		}
 	}
 }
