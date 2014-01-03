@@ -25,6 +25,7 @@ package
 		[Embed(source="assets/alert.mp3")] 						private var SndAlert:Class;
 		[Embed(source="assets/music.mp3")] 						private var SndMusic:Class;
 		[Embed(source="assets/ceptor.mp3")] 					private var SndCeptor:Class;
+		[Embed(source="assets/launch.mp3")] 					private var SndLaunch:Class;
 		
 		public var moon:FlxSprite;
 		public var ceptor:FlxSprite;
@@ -181,7 +182,7 @@ package
 				if (EndTimer.paused) {
 					
 					EndTimer.paused = false;
-					EndTimer.start(5);
+					EndTimer.start(4);
 				}
 			}
 			
@@ -680,6 +681,9 @@ package
 						moon.health = moonHealth;
 						moon.color = moonColor;
 						damage = 0;
+						power = 0;
+						damageMeter.x = FlxG.width;
+						recharging = true;
 					}
 			if(FlxG.keys.TWO) 
 				if (!ceptor.alive) {
@@ -691,6 +695,7 @@ package
 					ceptor.health = ceptorHealth;
 					ceptor.color = ceptorColor;
 					TxtEnd.visible=false;
+					FlxG.play(SndLaunch);
 				}
 			
 			
@@ -726,7 +731,7 @@ package
 				
 				if (EndTimer.paused) {
 					EndTimer.paused = false;
-					EndTimer.start(5);
+					EndTimer.start(4);
 				}
 			}
 			
