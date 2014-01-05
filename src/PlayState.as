@@ -746,8 +746,7 @@ package
 					FlxG.resetState();
 				}
 				else if (!(moon.alive || ceptor.alive)) {
-					FlxG.level = 3;
-					FlxG.resetState();
+					FlxG.switchState(new LeaderState);
 				}
 				EndTimer.paused = true;
 			}

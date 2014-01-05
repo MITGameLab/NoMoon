@@ -419,7 +419,7 @@ package
 			fighters = new FlxGroup(1000);
 			stars = new FlxGroup(50);
 			
-			remaining = 10;
+			remaining = 20;
 			
 			
 			
