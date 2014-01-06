@@ -114,7 +114,7 @@ package
 			}
 			else
 			{
-				ShipTimer.start(1,1,addFighter);
+				ShipTimer.start(0.1,1,addFighter);
 			}
 			TxtStart.visible=false;
 		}
@@ -677,6 +677,9 @@ package
 			
 			if(FlxG.keys.ONE)
 				if (!moon.alive) {
+						FlxG.score = FlxG.score/2;
+						TxtScore.text = FlxG.score.toString();
+						TxtScore.flicker(1);
 						moon.revive();
 						moon.health = moonHealth;
 						moon.color = moonColor;
@@ -685,8 +688,11 @@ package
 						damageMeter.x = FlxG.width;
 						recharging = true;
 					}
-			if(FlxG.keys.TWO) 
+			if(FlxG.keys.TWO && moon.alive) 
 				if (!ceptor.alive) {
+					FlxG.score = FlxG.score*3/4;
+					TxtScore.text = FlxG.score.toString();
+					TxtScore.flicker(1);
 					ceptor.x = moon.x;
 					ceptor.y = moon.y;
 					ceptor.velocity.x = -moon.velocity.x/2;
@@ -697,6 +703,7 @@ package
 					TxtEnd.visible=false;
 					FlxG.play(SndLaunch);
 				}
+			
 			
 			
 			if(FlxG.keys.CONTROL) 
@@ -745,7 +752,7 @@ package
 						FlxG.level = -FlxU.abs(FlxG.level);
 					FlxG.resetState();
 				}
-				else if (!(moon.alive || ceptor.alive)) {
+				else if (!moon.alive) {
 					FlxG.switchState(new LeaderState);
 				}
 				EndTimer.paused = true;

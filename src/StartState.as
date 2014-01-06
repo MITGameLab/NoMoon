@@ -15,11 +15,12 @@ package
 		{
 			FlxG.bgColor = 0xff101010;
 			
-			TxtStart = new FlxText(0,FlxG.height/2-10,FlxG.width,"Click to start");
+			TxtStart = new FlxText(0,FlxG.height/2-70,FlxG.width,"NO MOON 1.0\n\nROM check ok!\n\nClick to boot");
 			TxtStart.alignment = "center";
 			TxtStart.size = 16;
 			add(TxtStart);
 			
+			FlxG.flash();
 		}
 
 		
@@ -28,8 +29,9 @@ package
 		{
 
 			 
-			if (FlxG.mouse.pressed() || FlxG.mouse.justPressed() || FlxG.mouse.justReleased())
+			if (FlxG.mouse.pressed() || FlxG.mouse.justPressed() || FlxG.mouse.justReleased()) {
 				FlxG.switchState(new AttractState);
+			}
 			
 			super.update();
 			

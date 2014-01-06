@@ -78,7 +78,7 @@ package
 		private const helpPhrases:Array = new Array(
 			"Left stick: Fly Moon", "Left button: Moon beam", 
 			"Beware of rebels", "P2 button: Launch Fighter", 
-			"Right stick: Fly Fighter", "Right button: Fighter laser", "P1 button: Start Game");
+			"Right stick: Fly Fighter", "Right button: Fighter laser", "Moons & fighters are costly", "P1 button: Start Game");
 		
 		
 		private function helpText():void {
@@ -126,11 +126,11 @@ package
 				FlxG.play(SndTakeoff);
 				
 				fighters.add(fighter);
-				ShipTimer.start(FlxG.random()*30/remaining,1,addFighter);
+				ShipTimer.start(FlxG.random()*10/remaining,1,addFighter);
 			}
 			else
 			{
-				ShipTimer.start(1,1,addFighter);
+				ShipTimer.start(0.1,1,addFighter);
 			}
 		}
 		
@@ -598,7 +598,7 @@ package
 			
 
 			
-			TxtStart = new FlxText(0,50,FlxG.width,"By Philip Tan, MIT Game Lab");
+			TxtStart = new FlxText(0,50,FlxG.width,"NO MOON");
 			TxtStart.alignment = "center";
 			TxtStart.size = 16;
 			add(TxtStart);
@@ -740,7 +740,7 @@ package
 				TxtEnd.visible = false;
 				if ((remaining < 1) || !moon.alive)
 					FlxG.resetState();
-				if (!ceptor.alive) {
+				if (!ceptor.alive && moon.alive) {
 					ceptor.x = moon.x;
 					ceptor.y = moon.y;
 					ceptor.velocity.x = -moon.velocity.x/2;
