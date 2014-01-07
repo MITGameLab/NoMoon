@@ -126,7 +126,7 @@ package
 				FlxG.play(SndTakeoff);
 				
 				fighters.add(fighter);
-				ShipTimer.start(FlxG.random()*15/remaining,1,addFighter);
+				ShipTimer.start(FlxG.random()*10/remaining,1,addFighter);
 			}
 			else
 			{
