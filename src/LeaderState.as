@@ -275,7 +275,7 @@ package
 				
 				
 				
-				if(FlxG.keys.justReleased("LEFT")) // P1 left NUMPADFOUR
+				if(FlxG.keys.justReleased("NUMPADFOUR")) // P1 left NUMPADFOUR
 				{
 					if (PosP1 > 0) {
 						NameP1[PosP1] = 32;
@@ -288,7 +288,7 @@ package
 						TxtName1.flicker(0.1);
 					}
 				}
-				if(FlxG.keys.justReleased("RIGHT")) // P1 right NUMPADSIX
+				if(FlxG.keys.justReleased("NUMPADSIX")) // P1 right NUMPADSIX
 				{
 					if (PosP1 < NameLength-1) {
 						PosP1++;
@@ -300,7 +300,7 @@ package
 						TxtShoot.flicker(0.1);
 					}
 				}
-				if(FlxG.keys.justReleased("A")) // P2 left D
+				if(FlxG.keys.justReleased("D")) // P2 left D
 				{
 					if (PosP2 > 0) {
 						NameP2[PosP2] = 32;
@@ -313,7 +313,7 @@ package
 						TxtName2.flicker(0.1);
 					}
 				}
-				if(FlxG.keys.justReleased("D")) // P2 right G
+				if(FlxG.keys.justReleased("G")) // P2 right G
 				{
 					if (PosP2 < NameLength-1) {
 						PosP2++;
@@ -328,7 +328,7 @@ package
 				
 				
 				
-				if(FlxG.keys.SPACE && FlxG.keys.CONTROL) {
+				if(FlxG.keys.A && FlxG.keys.CONTROL) {
 					editing = false;
 					insertScore(-FlxG.score);
 					FlxG.play(SndPower);
