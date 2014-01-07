@@ -248,25 +248,25 @@ package
 			
 			
 			if(editing) {
-				if(FlxG.keys.justReleased("UP")) // P1 up NUMPADEIGHT
+				if(FlxG.keys.justReleased("W")) // P1 up NUMPADEIGHT
 				{
 					NameP1[PosP1]++;
 					checkLetter(1);
 					FlxG.play(SndBeepy);
 				}
-				if(FlxG.keys.justReleased("DOWN")) // P1 down NUMPADTWO
+				if(FlxG.keys.justReleased("S")) // P1 down NUMPADTWO
 				{
 					NameP1[PosP1]--;
 					checkLetter(1);
 					FlxG.play(SndBeepy);
 				}
-				if(FlxG.keys.justReleased("W")) // P2 up R
+				if(FlxG.keys.justReleased("UP")) // P2 up R
 				{
 					NameP2[PosP2]++;
 					checkLetter(2);
 					FlxG.play(SndBeepy);
 				}
-				if(FlxG.keys.justReleased("S")) // P2 down F
+				if(FlxG.keys.justReleased("DOWN")) // P2 down F
 				{
 					NameP2[PosP2]--;
 					checkLetter(2);
@@ -275,7 +275,7 @@ package
 				
 				
 				
-				if(FlxG.keys.justReleased("NUMPADFOUR")) // P1 left NUMPADFOUR
+				if(FlxG.keys.justReleased("A")) // P1 left NUMPADFOUR
 				{
 					if (PosP1 > 0) {
 						NameP1[PosP1] = 32;
@@ -288,7 +288,7 @@ package
 						TxtName1.flicker(0.1);
 					}
 				}
-				if(FlxG.keys.justReleased("NUMPADSIX")) // P1 right NUMPADSIX
+				if(FlxG.keys.justReleased("D")) // P1 right NUMPADSIX
 				{
 					if (PosP1 < NameLength-1) {
 						PosP1++;
@@ -300,7 +300,7 @@ package
 						TxtShoot.flicker(0.1);
 					}
 				}
-				if(FlxG.keys.justReleased("D")) // P2 left D
+				if(FlxG.keys.justReleased("LEFT")) // P2 left D
 				{
 					if (PosP2 > 0) {
 						NameP2[PosP2] = 32;
@@ -313,7 +313,7 @@ package
 						TxtName2.flicker(0.1);
 					}
 				}
-				if(FlxG.keys.justReleased("G")) // P2 right G
+				if(FlxG.keys.justReleased("RIGHT")) // P2 right G
 				{
 					if (PosP2 < NameLength-1) {
 						PosP2++;
@@ -328,7 +328,7 @@ package
 				
 				
 				
-				if(FlxG.keys.A && FlxG.keys.CONTROL) {
+				if(FlxG.keys.T && FlxG.keys.P) {
 					editing = false;
 					insertScore(-FlxG.score);
 					FlxG.play(SndPower);

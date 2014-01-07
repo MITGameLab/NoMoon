@@ -654,25 +654,25 @@ package
 			
 			chargeMeter.x=FlxG.width*(power/100-1);
 
-			if(FlxG.keys.NUMPADFOUR)
+			if(FlxG.keys.A)
 				moveMoon(-moon.maxVelocity.x, moon.acceleration.y);
-			if(FlxG.keys.NUMPADSIX)
+			if(FlxG.keys.D)
 				moveMoon(moon.maxVelocity.x, moon.acceleration.y);
-			if(FlxG.keys.NUMPADEIGHT)
+			if(FlxG.keys.W)
 				moveMoon(moon.acceleration.x, -moon.maxVelocity.y);
-			if(FlxG.keys.NUMPADTWO)
+			if(FlxG.keys.S)
 				moveMoon(moon.acceleration.x, moon.maxVelocity.y);
 			
-			if(FlxG.keys.D)
+			if(FlxG.keys.LEFT)
 				moveCeptor(-ceptorTurn, ceptor.acceleration.y);
-			if(FlxG.keys.G)
+			if(FlxG.keys.RIGHT)
 				moveCeptor(ceptorTurn, ceptor.acceleration.y);
-			if(FlxG.keys.R)
+			if(FlxG.keys.UP)
 				moveCeptor(ceptor.acceleration.x, -ceptorTurn);
-			if(FlxG.keys.F)
+			if(FlxG.keys.DOWN)
 				moveCeptor(ceptor.acceleration.x, ceptorTurn);
 			
-			if(FlxG.keys.A) 
+			if(FlxG.keys.P) 
 				ceptorFire();
 			
 			if(FlxG.keys.ONE)
@@ -706,7 +706,7 @@ package
 			
 			
 			
-			if(FlxG.keys.CONTROL) 
+			if(FlxG.keys.T) 
 				moonFire();
 			else {
 				beam.on = false;
