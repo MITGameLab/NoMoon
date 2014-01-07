@@ -10,7 +10,6 @@ package
 	public class LeaderState extends FlxState
 	{
 		
-		[Embed(source="assets/arrows.png")] 					private	var ImgArrows:Class;
 		[Embed(source="assets/beep.mp3")] 						private var SndBeepy:Class;
 		[Embed(source="assets/alert.mp3")] 						private var SndAlert:Class;
 		[Embed(source="assets/power.mp3")] 						private var SndPower:Class;
