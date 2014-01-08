@@ -2,8 +2,6 @@ package
 {
 	import flash.display.Graphics;
 	
-	import flashx.textLayout.utils.CharacterUtil;
-	
 	import org.flixel.*;
 	
 	
@@ -246,7 +244,7 @@ package
 			
 			
 			
-			if(editing) {
+			if(editing) { // Using justReleased here (and nowhere else) so each letter change occurs only once per keypress. (e.g. so you  go from A to B with one keypress instead of A to D)
 				if(FlxG.keys.justReleased("W")) // P1 up NUMPADEIGHT
 				{
 					NameP1[PosP1]++;
