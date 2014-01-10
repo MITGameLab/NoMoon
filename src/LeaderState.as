@@ -143,7 +143,7 @@ package
 		
 		override public function create():void
 		{
-			FlxG.music.fadeOut(5);
+			if (FlxG.music != null) FlxG.music.fadeOut(5);
 			Timer = new FlxTimer();
 			Timer.paused = true;
 			
@@ -346,6 +346,11 @@ package
 				if(FlxG.keys.ONE) {
 					FlxG.score = 0;
 					FlxG.level = 3;
+					FlxG.switchState(new PlayState());
+				}
+				if(FlxG.keys.TWO) {
+					FlxG.score = 0;
+					FlxG.level = -3;
 					FlxG.switchState(new PlayState());
 				}
 			}

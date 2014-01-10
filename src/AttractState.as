@@ -12,6 +12,7 @@ package
 		[Embed(source="assets/sun.png")] 						private	var ImgSun:Class;
 		[Embed(source="assets/moon.png")] 						private	var ImgMoon:Class;
 		[Embed(source="assets/ceptor.png")] 					private	var ImgCeptor:Class;
+		[Embed(source="assets/rebel.png")] 						private	var ImgRebel:Class;
 		[Embed(source="assets/fighter.png")] 					private	var ImgFighter:Class;
 		
 		[Embed(source="assets/boom.mp3")] 						private var SndBoom:Class;
@@ -29,6 +30,7 @@ package
 		public var ceptor:FlxSprite;
 		public var chargeMeter:FlxSprite;
 		public var damageMeter:FlxSprite;
+		public var TwoIcon:FlxSprite;
 		
 		public var sun:FlxSprite;
 		public var planets:FlxGroup;
@@ -74,11 +76,12 @@ package
 		private var TxtStart:FlxText;
 		private var TxtEnd:FlxText;
 		private var TxtCharge:FlxText;
+		private var TxtPrompt:FlxText;
 		
 		private const helpPhrases:Array = new Array(
 			"Left stick: Fly Moon", "Left button: Moon beam", 
-			"Beware of rebels", "P2 button: Launch Fighter", 
-			"Right stick: Fly Fighter", "Right button: Fighter laser", "Moons & fighters are costly", "P1 button: Start Game");
+			"Beware of rebels", "2P Button: New Fighter", 
+			"Right stick: Fly Fighter", "Right button: Fighter laser", "Moons & fighters are costly", "1P Button: New Moon");
 		
 		
 		private function helpText():void {
@@ -86,7 +89,17 @@ package
 				helpPhrase++;
 				if (helpPhrase >= helpPhrases.length) helpPhrase = 0;
 				TxtStart.text = helpPhrases[helpPhrase];
+				
+				if (helpPhrase % 2 == 1) {
+					TxtPrompt.text = "Press     for 1-Player Game";
+					TwoIcon.visible = false;
+				} else {
+					TxtPrompt.text = "Press       for 2-Player Game";
+					TwoIcon.visible = true;
+				}
+				
 				HelpTimer.start(timerInterval,1);
+				
 			}
 		}
 		
@@ -614,6 +627,16 @@ package
 			TxtCharge.size = 8;
 			add(TxtCharge);
 			
+			TxtPrompt = new FlxText(0,FlxG.height-30,FlxG.width,"Press     for 1-Player Game");
+			TxtPrompt.alignment = "center";
+			TxtPrompt.size = 8;
+			add(TxtPrompt);
+			
+			TwoIcon = new FlxSprite(FlxG.width/2-37,FlxG.height-28,ImgRebel)
+			add(TwoIcon);
+			TwoIcon.visible = false;
+			add(new FlxSprite(FlxG.width/2-32,FlxG.height-28,ImgRebel));
+			
 			FlxG.play(SndPower);
 			//FlxG.playMusic(SndMusic);
 			
@@ -670,11 +693,19 @@ package
 
 			
 			
-			if(FlxG.keys.ONE)
+			if(FlxG.keys.ONE) {
+				FlxG.score = 0;
+				FlxG.level = 3;
 				FlxG.switchState(new PlayState());
+			}
 				
 			
-			
+			if(FlxG.keys.TWO) {
+				FlxG.score = 0;
+				FlxG.level = -3;
+				FlxG.switchState(new PlayState());
+			}
+				
 			willShoot = false;
 			if (!recharging && (moon.alive) && (remaining > 0)) {
 				
@@ -739,7 +770,7 @@ package
 				
 				TxtEnd.visible = false;
 				if ((remaining < 1) || !moon.alive)
-					FlxG.resetState();
+					FlxG.switchState(new LeaderState);
 				if (!ceptor.alive && moon.alive) {
 					ceptor.x = moon.x;
 					ceptor.y = moon.y;
