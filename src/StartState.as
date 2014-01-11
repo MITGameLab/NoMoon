@@ -15,7 +15,7 @@ package
 		{
 			FlxG.bgColor = 0xff101010;
 			
-			TxtStart = new FlxText(0,FlxG.height/2-70,FlxG.width,"NO MOON 1.02\n\nROM check ok!\n\nClick to boot");
+			TxtStart = new FlxText(0,FlxG.height/2-70,FlxG.width,"NO MOON 1.03\n\nROM check ok!\n\nClick to boot");
 			TxtStart.alignment = "center";
 			TxtStart.size = 16;
 			add(TxtStart);

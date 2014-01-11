@@ -36,7 +36,7 @@ package
 		public var planets:FlxGroup;
 		public var fighters:FlxGroup;
 		public var stars:FlxGroup;
-		public var remaining:int;
+		public var planetsRemaining:int;
 		  
 		public var beam:FlxEmitter;
 		public var bullets:FlxEmitter;
@@ -110,7 +110,7 @@ package
 				FlxG.play(SndTakeoff);
 				
 				fighters.add(fighter);
-				ShipTimer.start(FlxG.random()*30/remaining,1,addFighter);
+				ShipTimer.start(FlxG.random()*30/planetsRemaining,1,addFighter);
 			}
 			else
 			{
@@ -140,7 +140,7 @@ package
 				FlxG.resumeSounds();
 				
 				hitPlanet.kill();
-				remaining--;
+				planetsRemaining--;
 				FlxG.score -= 500000+FlxG.random()*300000;
 				
 			}
@@ -410,7 +410,7 @@ package
 			stars = new FlxGroup(50);
 			
 			if (FlxU.abs(FlxG.level) < 3) FlxG.level = 3;
-			remaining = FlxU.abs(FlxG.level);
+			planetsRemaining = FlxU.abs(FlxG.level);
 			
 			
 			
@@ -553,7 +553,7 @@ package
 			
 			//Set up universe
 			
-			for (i=0; i < remaining; i++) {
+			for (i=0; i < planetsRemaining; i++) {
 				newPlanet();
 			}
 			add(planets);
@@ -563,7 +563,7 @@ package
 			if (FlxG.level > 0) 
 				ceptor.kill();
 			else
-				FlxG.level = remaining;
+				FlxG.level = planetsRemaining;
 			
 			add(fighters);
 			
@@ -727,11 +727,11 @@ package
 			planets.sort("alpha",ASCENDING);
 			
 			
-			if (!moon.alive || (remaining < 1)) { // All possible endgame reasons
+			if (!moon.alive || (planetsRemaining < 1)) { // All possible endgame reasons
 
 				if (!moon.alive) 
 					TxtEnd.text = "NO MOON";
-				if (remaining < 1)
+				if (planetsRemaining < 1)
 					TxtEnd.text = "Sector Clear";
 				
 				TxtEnd.visible = true;
@@ -746,7 +746,7 @@ package
 			if (EndTimer.finished) {
 				
 				TxtEnd.visible = false;
-				if (remaining < 1) {
+				if (planetsRemaining < 1) {
 					FlxG.level++;
 					if (ceptor.alive)
 						FlxG.level = -FlxU.abs(FlxG.level);
